@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import env from '../utils/validations/env';
+import env from '../config/env';
 
 const enforceHttps = (req: Request, res: Response, next: NextFunction) => {
 	if (env.APP_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') {

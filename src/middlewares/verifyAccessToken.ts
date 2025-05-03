@@ -1,13 +1,11 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import env from '../utils/validations/env';
+import env from '../config/env';
 
-declare global {
-	namespace Express {
-		interface Request {
-			userId?: string;
-		}
-	}
+declare module 'express' {
+    interface Request {
+        userId?: string;
+    }
 }
 
 const verifyAccessToken = (req: Request, res: Response, next: NextFunction) => {

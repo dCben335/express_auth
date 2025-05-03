@@ -1,5 +1,5 @@
 import rateLimit from 'express-rate-limit';
-import env from '../utils/validations/env';
+import env from '../config/env';
 
 const authRateLimiter = rateLimit({
 	windowMs: env.AUTH_RATE_LIMIT_WINDOW,

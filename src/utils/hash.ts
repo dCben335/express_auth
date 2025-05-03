@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
-import env from "./validations/env";
+import env from "../config/env";
 
 const SALT_ROUNDS = 12;
 const HASH_ALGORITHM = "sha256";

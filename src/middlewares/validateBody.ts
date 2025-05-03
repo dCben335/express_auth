@@ -2,11 +2,11 @@ import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { ZodSchema } from 'zod';
 import sanitizeHtml from 'sanitize-html';
 
-const isObject = (value: any): value is Record<string, unknown> => {
+const isObject = (value: unknown): value is Record<string, unknown> => {
 	return typeof value === 'object' && value !== null && !Array.isArray(value);
 };
 
-const sanitizeInput = (obj: any): any => {
+const sanitizeInput = (obj: Record<string, unknown>) => {
 	return Object.entries(obj).reduce<Record<string, unknown>>((acc, [key, value]) => {
 		if (typeof value === 'string') {
 			acc[key] = sanitizeHtml(value, {
@@ -23,7 +23,8 @@ const sanitizeInput = (obj: any): any => {
 
 const validateBody = (schema: ZodSchema): RequestHandler => {
 	return (req: Request, res: Response, next: NextFunction) => {
-		const result = schema.safeParse(req.body);
+		const sanitizedBody = sanitizeInput(req.body);
+		const result = schema.safeParse(sanitizedBody);
 
 		if (!result.success) {
 			res.status(400).json({

@@ -6,7 +6,12 @@
   "scripts": {
     "dev": "ts-node src/app.ts",
     "build": "tsc",
-    "start": "node dist/app.js"
+    "start": "node dist/app.js",
+    "generate": "prisma generate",
+    "migrate": "prisma migrate dev --name init",
+    "clean": "rm -rf node_modules && rm -rf package-lock.json && rm -rf dist",
+    "format": "prettier --write .",
+	"re": "npm run clean && npm install"
   },
   "keywords": [],
   "author": "",
@@ -22,13 +27,16 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
+    "@eslint/js": "^9.26.0",
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.1",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.15.3",
     "@types/sanitize-html": "^2.15.0",
+    "globals": "^16.0.0",
     "prisma": "^6.7.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.31.1"
   }
 }

@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
-import userRoutes from './routes/user.routes';
-import authRoutes from './routes/auth.routes';
-import env from './utils/validations/env';
+import userRoutes from './features/user/user.route';
+import authRoutes from './features/auth/auth.route';
+import env from './config/env';
 import enforceHttps from './middlewares/enforceHttps';
 import verifyAccessToken from './middlewares/verifyAccessToken';
 import authRateLimiter from './middlewares/authRateLimiter';
@@ -34,5 +34,5 @@ app.get('/protected', verifyAccessToken, (req: Request, res: Response) => {
 
 
 app.listen(env.APP_PORT, () => {
-  	console.log(`Server is running on ${env.APP_URL}:${env.APP_PORT}`);
+	console.log(`Server is running on ${env.APP_URL}:${env.APP_PORT}`);
 });
