@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { User } from '../prisma/generated';
-import env from '../config/env';
+import { User } from '../../prisma/generated';
+import env from '../../config/env';
 
 const BYTES_LENGTH = 16;
 const ENCODING = 'base64url';

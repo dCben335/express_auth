@@ -1,106 +1,81 @@
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
-import { storeRefreshToken, findRefreshToken, revokeRefreshTokenById } from './auth.repository';
-import { findUserByEmail, createUserByEmailAndPassword } from '../user/user.repository';
-import { generateTokens } from '../../utils/jwt';
+import { findUserByEmail, createUser } from '../user/user.repository';
+import { findAndRevokeToken, handleTokens } from './auth.service';
 
-const createAndStoreRefreshToken = async (userId: string, userAgent: string, ipAddress: string) => {
-	const tokens = generateTokens(userId);
-	await storeRefreshToken({
-		refreshToken: tokens.refreshToken,
-		userId,
-		userAgent,
-		ipAddress,
-	});
-	return tokens;
-};
-
-export const register = async (req: Request, res: Response, next: NextFunction) => {
+export const register = async (
+	req: Request, 
+	res: Response, 
+	next: NextFunction
+): Promise<any> => {
   	try {
 		const { email, password } = req.body;
-
 		const existingUser = await findUserByEmail(email);
 		if (existingUser) {
-			res.status(409).json({ message: 'Email already in use.' });
-			return;
+			return res.status(409).json({ message: 'Email already in use.' });
 		}
-
-		const user = await createUserByEmailAndPassword({ email, password });
-		if (!user) {
-			res.status(500).json({ message: 'Failed to create user.' });
-			return;
-		}
-
-		const { accessToken, refreshToken } = await createAndStoreRefreshToken(
-			user.id,
-			req.headers['user-agent'] || '',
-			req.ip || ''
-		);
-
-		res.status(201).json({ accessToken, refreshToken });
+		const user = await createUser({ email, password });
+		const { accessToken, refreshToken } = await handleTokens(user.id, req);
+		return res.status(201).json({ accessToken, refreshToken });
 	} catch (err) {
-		next(err);
+		return next(err);
   	}
 };
 
-export const login = async (req: Request, res: Response, next: NextFunction) => {
+export const login = async(
+	req: Request,
+	res: Response,
+	next: NextFunction
+): Promise<any> => {
 	try {
 		const { email, password } = req.body;
 
 		const user = await findUserByEmail(email);
 		if (!user) {
-			res.status(401).json({ message: 'Invalid credentials' });
-			return;
+			return res.status(401).json({ message: 'Invalid credentials' });
 		}
 
 		const isPasswordValid = await bcrypt.compare(password, user.password);
 		if (!isPasswordValid) {
-			res.status(401).json({ message: 'Invalid credentials' });
-			return;
+			return res.status(401).json({ message: 'Invalid credentials' });
 		}
-
-		const { accessToken, refreshToken } = await createAndStoreRefreshToken(
-			user.id,
-			req.headers['user-agent'] || '',
-			req.ip || ''
-		);
-
-		res.status(200).json({ accessToken, refreshToken });
+		const { accessToken, refreshToken } = await handleTokens(user.id, req);
+		return res.status(200).json({ accessToken, refreshToken });
 	} catch (err) {
-		next(err);
+		return next(err);
 	}
 };
 
-export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
+export const refreshToken = async(
+	req: Request, 
+	res: Response, 
+	next: NextFunction
+): Promise<any> => {
 	try {
-		const storedToken = await findRefreshToken(req.body.refreshToken);
-		if (!storedToken || storedToken.revoked || storedToken.expireAt < new Date()) {
-			res.status(401).json({ message: 'Invalid or expired refresh token' });
-			return;
+		const token = await findAndRevokeToken(req.body.refreshToken);
+		if (!token) {
+			return res.status(401).json({ message: 'Invalid or expired refresh token' });
 		}
-		await revokeRefreshTokenById(storedToken.id);
-		const { accessToken, refreshToken } = await createAndStoreRefreshToken(
-			storedToken.userId,
-			req.headers['user-agent'] || '',
-			req.ip || ''
-		);
-		res.status(200).json({ accessToken, refreshToken });
+		const { accessToken, refreshToken } = await handleTokens(token.userId, req);
+		return res.status(200).json({ accessToken, refreshToken });
 	} catch (err) {
-		next(err);
+		return next(err);
 	}
 };
 
-export const logout = async (req: Request, res: Response, next: NextFunction) => {
+export const logout = async(
+	req: Request, 
+	res: Response, 
+	next: NextFunction
+): Promise<any> => {
 	try {
 		const { refreshToken } = req.body;
-		const storedToken = await findRefreshToken(refreshToken);
+		const storedToken = await findAndRevokeToken(refreshToken);
 		if (!storedToken) {
-			res.status(401).json({ message: 'Invalid refresh token' });
-			return;
+			return res.status(401).json({ message: 'Invalid refresh token' });
 		}
-		await revokeRefreshTokenById(storedToken.id);
-		res.status(200).json({ message: 'Logged out successfully' });
+		return res.status(200).json({ message: 'Logged out successfully' });
 	} catch (err) {
-		next(err);
+		return next(err);
 	}
 };

@@ -2,7 +2,6 @@
   "name": "node",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "dev": "ts-node src/app.ts",
     "build": "tsc",
@@ -11,7 +10,7 @@
     "migrate": "prisma migrate dev --name init",
     "clean": "rm -rf node_modules && rm -rf package-lock.json && rm -rf dist",
     "format": "prettier --write .",
-	"re": "npm run clean && npm install"
+	"re": "pnpm run clean && pnpm install && pnpm generate && pnpm migrate"
   },
   "keywords": [],
   "author": "",
