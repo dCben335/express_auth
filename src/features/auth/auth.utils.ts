@@ -3,8 +3,16 @@ import crypto from 'crypto';
 import { User } from '../../prisma/generated';
 import env from '../../config/env';
 
-const BYTES_LENGTH = 16;
+const BYTES_LENGTH = 32; 
 const ENCODING = 'base64url';
+const HASH_ALGORITHM = "sha256";
+const HASH_ENCODING = "hex";
+
+export const hashToken = (token: string): string => {
+	const hash = crypto.createHmac(HASH_ALGORITHM, env.JWT_REFRESH_SECRET);
+	hash.update(token);
+	return hash.digest(HASH_ENCODING);
+}
 
 const generateAccessToken = (userId: User['id']) => {
 	return jwt.sign({ userId }, env.JWT_ACCESS_SECRET, {

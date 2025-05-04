@@ -21,34 +21,16 @@ const envSchema = z.object({
 
 	APP_HOST: z.string().default('localhost'),
 	APP_URL: z.string().url().default('http://localhost'),
-  	APP_PORT: z
-		.string().min(1, 'APP_PORT must be at least 1 character long')
-		.transform(parseAsNumber),
+  	APP_PORT: z.string().min(1).transform(parseAsNumber),
 
-	AUTH_RATE_LIMIT_MAX: z
-		.string()
-		.min(1, 'AUTH_RATE_LIMIT must be at least 1 character long')
-		.transform(parseAsNumber),
-	AUTH_RATE_LIMIT_WINDOW: z
-		.string()
-		.min(1, 'AUTH_RATE_LIMIT_WINDOW must be at least 1 character long')
-		.transform(parseAsNumber),
+	AUTH_RATE_LIMIT_MAX: z.string().min(1).transform(parseAsNumber),
+	AUTH_RATE_LIMIT_WINDOW_MS: z.string().min(1).transform(parseAsNumber),
 
-	JWT_ACCESS_SECRET: z
-		.string()
-		.min(20, 'JWT_ACCESS_SECRET must be at least 20 characters long'),
-	JWT_ACCESS_EXPIRE_IN_SECOND: z
-		.string()
-		.min(3, 'JWT_ACCESS_EXPIRE_IN_SECOND must be a number greater with 3 digits minimum')
-		.transform(parseAsNumber),
+	JWT_ACCESS_SECRET: z.string().min(20),
+	JWT_ACCESS_EXPIRE_IN_SECOND: z.string().min(3).transform(parseAsNumber),
 
-	JWT_REFRESH_SECRET: z
-		.string()
-		.min(20, 'JWT_REFRESH_SECRET must be at least 20 characters long'),
-	JWT_REFRESH_EXPIRE_IN_SECOND: z
-		.string()
-		.min(3, 'JWT_REFRESH_EXPIRE_IN_SECOND must be a number greater with 3 digits minimum')
-		.transform(parseAsNumber),
+	JWT_REFRESH_SECRET: z.string().min(20),
+	JWT_REFRESH_EXPIRE_IN_SECOND: z.string().min(3).transform(parseAsNumber),
 				
 	DATABASE_URL: z.string().url().min(1),
 });

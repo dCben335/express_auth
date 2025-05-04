@@ -1,6 +1,6 @@
 import { User } from "../../prisma/generated";
 import prisma from "../../prisma/client";
-import { hashPassword } from "../../utils/hash";
+import { hashPassword } from "./user.utils";
 
 export const findUserById = async (id: User["id"]) =>{
 	return await prisma.user.findUnique({

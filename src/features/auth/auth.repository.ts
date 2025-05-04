@@ -3,7 +3,7 @@ import prisma from "../../prisma/client";
 import env from "../../config/env";
 import { RefreshToken, User } from "../../prisma/generated";
 import { Request } from "express";
-import { hashToken } from "../../utils/hash";
+import { hashToken } from "./auth.utils";
 
 type AddRefreshTokenToWhitelistParams = {
 	refreshToken: string;
