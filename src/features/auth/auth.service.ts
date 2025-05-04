@@ -17,7 +17,7 @@ export const findAndRevokeToken = async (refreshToken: string) => {
 	const token = await findRefreshToken(refreshToken);
 	if (!token || token.revoked || token.expireAt < new Date()) {
 		return null;
-	}
+	}	
 	await revokeRefreshTokenById(token.id);
 	return token;
 }

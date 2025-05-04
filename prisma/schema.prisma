@@ -30,5 +30,7 @@ model RefreshToken {
   ipAddress   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  expireAt    DateTime
+  expireAt    DateTime 
 }
+
+// auto delete expired refresh tokens

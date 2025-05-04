@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { ZodSchema } from 'zod';
 import sanitizeHtml from 'sanitize-html';
+import ValidationError from '../utils/error/Validation.error';
 
 const isObject = (value: unknown): value is Record<string, unknown> => {
 	return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -21,17 +22,13 @@ const sanitizeInput = (obj: Record<string, unknown>) => {
 	}, {});
 };
 
-const validateBody = (schema: ZodSchema): RequestHandler => {
+const bodyValidationMiddleware = (schema: ZodSchema): RequestHandler => {
 	return (req: Request, res: Response, next: NextFunction) => {
 		const sanitizedBody = sanitizeInput(req.body);
 		const result = schema.safeParse(sanitizedBody);
 
 		if (!result.success) {
-			res.status(400).json({
-				message: 'Validation error',
-				errors: result.error.flatten().fieldErrors,
-			});
-			return;
+			throw new ValidationError('Validation error', result.error.flatten().fieldErrors)
 		}
 
 		req.body = result.data;
@@ -39,4 +36,4 @@ const validateBody = (schema: ZodSchema): RequestHandler => {
 	};
 };
 
-export default validateBody;
+export default bodyValidationMiddleware;

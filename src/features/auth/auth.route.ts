@@ -2,8 +2,8 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { userEmailSchema, userPasswordSchema } from '../user/user.schema';
 import { login, logout, refreshToken, register } from './auth.controller';
-import validateBody from '../../middlewares/validateBody';
-import verifyAccessToken from '../../middlewares/verifyAccessToken';
+import bodyValidationMiddleware from '../../middlewares/bodyValidation.middleware.';
+import accessMiddleware from '../../middlewares/access.middleware';
 
 const router = Router();
 
@@ -25,9 +25,9 @@ const logoutSchema = z.object({
 	refreshToken: z.string(),
 });
 
-router.post('/register', validateBody(registerSchema), register);
-router.post('/login', validateBody(loginSchema), login);
-router.post('/refresh-token', validateBody(refreshTokenSchema), refreshToken);
-router.post('/logout', verifyAccessToken, validateBody(logoutSchema), logout);
+router.post('/register', bodyValidationMiddleware(registerSchema), register);
+router.post('/login', bodyValidationMiddleware(loginSchema), login);
+router.post('/refresh-token', bodyValidationMiddleware(refreshTokenSchema), refreshToken);
+router.post('/logout', accessMiddleware, bodyValidationMiddleware(logoutSchema), logout);
 
 export default router;
