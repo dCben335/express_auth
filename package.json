@@ -10,7 +10,7 @@
     "migrate": "prisma migrate dev --name init",
     "clean": "rm -rf node_modules && rm -rf package-lock.json && rm -rf dist",
     "format": "prettier --write .",
-	"re": "pnpm run clean && pnpm install && pnpm generate && pnpm migrate"
+    "re": "pnpm run clean && pnpm install && pnpm generate && pnpm migrate"
   },
   "keywords": [],
   "author": "",
